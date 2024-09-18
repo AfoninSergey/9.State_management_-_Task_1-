@@ -1,17 +1,13 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import { PLAYER, STATUS } from '../../constants';
-import { selectCurrentPlayer, selectField, selectStatus } from '../../selectors';
 import { checkWin, checkEmptyCell } from '../../utils';
-import { FieldLayout } from './field-layout';
 import { setCurrentPlayer, setField, setStatus } from '../../actions';
+import { FieldLayout } from './field-layout';
 
-export const Field = () => {
-	const field = useSelector(selectField);
-	const status = useSelector(selectStatus);
-	const currentPlayer = useSelector(selectCurrentPlayer);
-	const dispatch = useDispatch();
-
-	const onCellClick = (cellIndex) => {
+class FieldContainer extends Component {
+	onCellClick = (cellIndex) => {
+		const { status, field, currentPlayer, dispatch } = this.props;
 		if (status === STATUS.WIN || field[cellIndex] !== PLAYER.NOBODY) return;
 
 		const newField = [...field];
@@ -32,5 +28,16 @@ export const Field = () => {
 		}
 	};
 
-	return <FieldLayout field={field} onCellClick={onCellClick} />;
-};
+	render() {
+		const { field } = this.props;
+		return <FieldLayout field={field} onCellClick={this.onCellClick} />;
+	}
+}
+
+const mapStateToProps = ({ field, status, currentPlayer }) => ({
+	field,
+	status,
+	currentPlayer,
+});
+
+export const Field = connect(mapStateToProps)(FieldContainer);
